@@ -122,7 +122,41 @@ namespace Ch3 {
 		print_template(7.5, "hello", 45, 56);
 	}
 
-	auto lambda_test = [] {std::cout << "hello lambda" << std::endl; };
+
+	// lambda 不是临时对象，必须指出类型
+
+	void test_lambda() {
+		// lambda
+		auto lambda_test = [] {std::cout << "hello lambda" << std::endl; };
+
+		// 传入参数：在方括号后写入参数即可，调用的时候和函数调用相同
+		auto hello = [](const std::string& s) {
+			std::cout << s << std::endl;
+		};
+		
+		// 可以指出返回类型，箭头
+		auto type = []()->double {
+			return 32;
+		};
+		std::cout << type() << std::endl;
+		std::cout << "########################" << std::endl;
+		
+		// 捕获外部作用域
+		int x = 0;
+		int y = 42;
+		std::cout << x << std::endl;
+		auto qqq = [x, y] {
+			std::cout << "x: " << x << std::endl;
+			std::cout << "y: " << y << std::endl;
+			//++y;
+		};
+		x = y = 77;  
+		std::cout << x << std::endl;
+		qqq();
+		qqq();
+		std::cout << "final y: " << y << std::endl;
+	}
+	
 
 }
 
@@ -142,7 +176,7 @@ int main() {
 	Ch3::test_RowString();
 	// Ch3::test_constexpr();
 	Ch3::test_varidiac_template();
-	Ch3::lambda_test();
+	Ch3::test_lambda();
 	
 	
 }
