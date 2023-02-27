@@ -2,13 +2,15 @@
 #include<vector>
 #include<string>
 #include<set>
+#include<functional>
+
 
 
 
 
 
 namespace Ch3 {
-	
+
 	//// 3.1.2 auto的语言特性：一定要初始化
 	void test_auto() {
 		auto i = 42;
@@ -79,7 +81,7 @@ namespace Ch3 {
 		P b = { 1, 2,3 }; // 列表初始化的构造
 
 	}
-	
+
 	void test_move() {
 		/*
 		  对象被move掉后将处于：有效但是不确定状态！
@@ -95,15 +97,15 @@ namespace Ch3 {
 		//x[0] = 'T';
 		//std::cout << x << std::endl;
 	}
-	
-	
+
+
 	void test_RowString() {
 		std::string x = R"nc(a\
 			b\nc()"
 			)nc";
 		std::cout << x << std::endl;
 	}
-	
+
 	//constexpr int square(int x) {
 	//	return x * x;
 	//}
@@ -112,7 +114,7 @@ namespace Ch3 {
 	//	std::cout << a[square(9)] << std::endl;
 	//}
 
-	void print_template(){}
+	void print_template() {}
 	template<typename T, typename... Types>
 	void print_template(const T& firstArg, const Types&... args) {
 		std::cout << firstArg << std::endl;
@@ -133,14 +135,14 @@ namespace Ch3 {
 		auto hello = [](const std::string& s) {
 			std::cout << s << std::endl;
 		};
-		
+
 		// 可以指出返回类型，箭头
 		auto type = []()->double {
 			return 32;
 		};
 		std::cout << type() << std::endl;
 		std::cout << "########################" << std::endl;
-		
+
 		// 捕获外部作用域
 		int x = 0;
 		int y = 42;
@@ -150,13 +152,26 @@ namespace Ch3 {
 			std::cout << "y: " << y << std::endl;
 			//++y;
 		};
-		x = y = 77;  
+		x = y = 77;
 		std::cout << x << std::endl;
 		qqq();
 		qqq();
 		std::cout << "final y: " << y << std::endl;
 	}
+
+
+	std::function<int(int, int)> returnLambda() {
+		return [](int x, int y) {
+			return x* y;
+		};
+	}
+
+	void test_resturnLambda() {
+		auto lf = returnLambda();
+		std::cout << lf(6, 7) << std::endl;
+	}
 	
+
 
 }
 
@@ -177,6 +192,7 @@ int main() {
 	// Ch3::test_constexpr();
 	Ch3::test_varidiac_template();
 	Ch3::test_lambda();
-	
-	
+	Ch3::test_resturnLambda();
+
+
 }
