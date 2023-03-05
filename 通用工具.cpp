@@ -8,7 +8,8 @@
 #include <memory>
 #include <vector>
 #include <functional>
-
+#include <type_traits>
+#include <algorithm>
 
 
 
@@ -318,10 +319,147 @@ namespace SmartPoint {
 	}
 
 
+	
+
+
+
 
 };
 
+
+namespace TypeTrait{
+	template<typename T>
+	void foo(const T& val) {
+		// std::is_pointer<T>::value  为一个布尔型
+		if (std::is_pointer<T>::value) {
+			std::cout << "foo() called for a pointer" << std::endl;
+		}
+		else {
+			std::cout << "foo() called for a value" << std::endl;
+		}
+	}
+
+	// 第二种实现方法
+	template<typename T>
+	void foo_impl(const T& val, std::true_type) {
+		std::cout << "foo() called for pointer to " << *val << std::endl;
+	}
+
+	template<typename T>
+	void foo_impl(const T& val, std::false_type) {
+		std::cout << "foo() called for value to " << val << std::endl;
+	}
+	
+	template<typename T>
+	void foo2(const T& val) {
+		foo_impl(val, std::is_pointer<T>());
+	}
+
+	void test01() {
+		int a{ 10 };
+		int* pa = &a;
+        // 使用指针作为参数
+		foo(pa);
+		// 使用值作为参数
+		foo(a);
+
+		std::cout << "使用第二种实现方式：" << std::endl;
+		foo2(pa);
+		foo2(a);
+	}
+
+	// 将可调用对象视为“对象”
+	// 这个用法和python中的有类似的地方
+	int func(int x, int y) { return x * y; }
+	void test02() {
+		std::vector<std::function<int(int, int)>> task;
+		task.push_back(func);
+		task.push_back([](int a, int b) {return a + b; });
+		for (auto it = task.begin(); it != task.end(); ++it) {
+			std::cout << (*it)(3, 6) << " ";
+		}
+	}
+		
+
+};
+
+
+// 提供一些辅助函数
+namespace SomeHelpFunction {
+	// 比较最大值和最小值
+	bool int_ptr_less(int* a, int* b) {
+		return *a < *b;
+	}
+
+
+	void test01() {
+		int x = 13;
+		int y = 1;
+		int z = 3;
+		int* px = &x;
+		int* py = &y;
+		int* pz = &z;
+
+		int* pmax = std::max(px, py, int_ptr_less);
+		std::cout << "max = " << *pmax << std::endl;
+
+		// std::pair<int*, int*> extrems = std::minmax({ px, py, pz }, int_ptr_less);
+
+		std::pair<int*, int*> extrems = std::minmax({ px, py, pz },
+			[](int* a, int* b) {return *a < *b; });
+		std::cout << "max = " << *extrems.second << std::endl;
+		std::cout << "min = " << *extrems.first << std::endl;
+	
+	}
+
+	// 交换两个值
+	class MyCountainer {
+	private:
+		int* elem;
+		int numElem;
+	public:
+		MyCountainer(const int n):numElem(n) {
+			elem = new int[n];
+			for (int i = 0; i < n; ++i)
+				elem[i] = i;
+		}
+		~MyCountainer() {
+			std::cout << "调用析构函数" << std::endl;
+			delete[] elem;
+		}
+		void swap(MyCountainer& x) {
+			std::swap(elem, x.elem);
+			std::swap(numElem, x.numElem);
+		}
+		void show() {
+			for (int i = 0; i < numElem; ++i) {
+				std::cout << elem[i] << " ";
+			}std::cout << std::endl;
+		}
+	};
+
+	inline void swap(MyCountainer& c1, MyCountainer& c2) {
+		c1.swap(c2);
+	}
+
+	void test02() {
+		MyCountainer c1(10);
+		c1.show();
+		MyCountainer c2(20);
+		c2.show();
+		std::cout << "进行交换" << std::endl;
+		c1.swap(c2);
+		std::cout << "c1 = ";
+		c1.show();
+		
+
+
+	}
+};
+
+
 int main() {
-	SmartPoint::test07();
+	SomeHelpFunction::test02();
+	
 	return 0;
 }
