@@ -180,6 +180,136 @@ namespace AllContainerAndAlgorithm {
 		}std::cout << std::endl;
 	}
 
+	void test_insert_iterator() {
+		std::list<int> coll1 = { 1, 2, 3, 4, 5, 6 };
+		std::vector<int> coll2;
+		// coll2.resize(coll1.size());
+		std::copy(coll1.begin(), coll1.end(), std::back_inserter(coll2));
+		std::cout << "使用back_inserter: ";
+		for (auto elem : coll2) {
+			std::cout << elem << " ";
+		}std::cout << std::endl;
+
+		std::cout << "使用front_insert: ";
+		std::deque<int> coll3;
+		std::copy(coll1.begin(), coll1.end(), std::front_inserter(coll3));
+		for (auto elem : coll3) {
+			std::cout << elem << " ";
+		}std::cout << std::endl;
+
+		std::set<int> coll4;
+		std::copy(coll1.begin(), coll1.end(), std::inserter(coll4, coll4.begin()));
+		for (auto elem : coll4) {
+			std::cout << elem << " ";
+		}std::cout << std::endl;
+	}
+
+	// 流迭代器
+	//void test_io_ierator() {
+	//	std::vector<std::string> coll;
+	//	std::copy(std::istream_iterator<std::string>(std::cin),
+	//		std::istream_iterator<std::string>(),
+	//		std::back_inserter(coll));
+
+	//	std::sort(coll.begin(), coll.end());
+	//	std::unique_copy(coll.cbegin(), coll.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
+
+	//}
+
+
+	void test_reverse_iterator() {
+		std::vector<int> coll;
+		for (int i = 0; i < 10; ++i) {
+			coll.push_back(i);
+		}
+		std::copy(coll.crbegin(), coll.crend(), std::ostream_iterator<int>(std::cout, " "));
+		std::cout << std::endl;
+	}
+
+	template<typename T>
+	inline void PRINT_ELEMENTS(const T& coll, const std::string& optstr = "") {
+		std::cout << optstr;
+		for (const auto& elem : coll) {
+			std::cout << elem << " ";
+		}std::cout << std::endl;
+	}
+
+	void test_remove() {
+		std::list<int> coll;
+		for (int i = 0; i <= 6; ++i) {
+			coll.push_front(i);
+			coll.push_back(i);
+		}
+
+		// 如下的做法并不会真的删除元素
+		std::cout << "pre: ";
+		std::copy(coll.cbegin(), coll.cend(), std::ostream_iterator<int>(std::cout, " "));
+		std::cout << std::endl;
+
+		std::remove(coll.begin(), coll.end(), 3);
+
+		std::cout << "post: ";
+		std::copy(coll.cbegin(), coll.cend(), std::ostream_iterator<int>(std::cout, " "));
+		std::cout << std::endl;
+
+		std::cout << "##################" << std::endl;
+		std::list<int>::iterator end = std::remove(coll.begin(), coll.end(), 3);
+		std::cout << "new post: ";
+		std::copy(coll.begin(), end, std::ostream_iterator<int>(std::cout, " "));
+		std::cout << std::endl;
+
+		coll.erase(end, coll.end());
+		std::cout << "result : ";
+		std::copy(coll.cbegin(), coll.cend(), std::ostream_iterator<int>(std::cout, " "));
+		std::cout << std::endl;
+
+		// 关联容器的remove
+		std::set<int> coll2 = { 1, 2, 3, 4, 5, 6, 7 };
+		std::copy(coll2.cbegin(), coll2.cend(), std::ostream_iterator<int>(std::cout, " "));
+		std::cout << std::endl;
+
+		int num = coll2.erase(3);
+		std::cout << "删除的元素个数为：" << num << std::endl;
+
+		std::copy(coll2.cbegin(), coll2.cend(), std::ostream_iterator<int>(std::cout, " "));
+		std::cout << std::endl;
+
+
+		// 对于list来说，可以直接调用其成员函数
+		// 这是由list自身的数据结构来决定的
+	}
+
+	void print(int elem) {
+		std::cout << elem << " ";
+	}
+
+	void test_for_each() {
+		std::vector<int> coll;
+		for (int i = 0; i < 10; ++i) {
+			coll.push_back(i);
+		}
+
+		std::for_each(coll.cbegin(), coll.cend(), print);
+		std::cout << std::endl;
+	}
+
+	int square(int value) {
+		return value * value;
+	}
+
+	void test_transform() {
+		std::set<int> coll1;
+		std::vector<int> coll2;
+		for (int i = 1; i <= 9; ++i) {
+			coll1.insert(i);
+		}
+		PRINT_ELEMENTS(coll1, "initialized: ");
+
+		std::transform(coll1.cbegin(), coll1.cend(), std::back_inserter(coll2),
+			square);
+		PRINT_ELEMENTS(coll2, "squared: ");
+
+	}
 };
 
 
@@ -197,4 +327,10 @@ int main() {
 	AllContainerAndAlgorithm::test_algorithm();
 	AllContainerAndAlgorithm::test_range();
 	AllContainerAndAlgorithm::test_copy();
+	AllContainerAndAlgorithm::test_insert_iterator();
+	// AllContainerAndAlgorithm::test_io_ierator();
+	AllContainerAndAlgorithm::test_reverse_iterator();
+	AllContainerAndAlgorithm::test_remove();
+	AllContainerAndAlgorithm::test_for_each();
+	AllContainerAndAlgorithm::test_transform();
 }
