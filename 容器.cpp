@@ -10,6 +10,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
+#include <functional>
 
 // 本章非常重要是对容器的各种介绍，需要非常熟练地掌握各种容器的用法
 
@@ -316,9 +317,61 @@ namespace AllContainerAndAlgorithm {
 		int y = 12;
 
 		auto pos = std::find_if(coll.cbegin(), coll.cend(),
-			[](int i) {return i > x && i < y; }
+			[=](int i) {return i > x && i < y; }
 		);
 		std::cout << "first elem > 5 and < 12  " << *pos << std::endl;
+	}
+
+	class PrintInt {
+	public:
+		void operator()(int elem)const{
+			std::cout << elem << " ";
+		}
+	};
+	void test_function_object() {
+		std::vector<int> coll;
+		for (int i = 0; i < 10; ++i) {
+			coll.push_back(i);
+		}
+		std::for_each(coll.cbegin(), coll.cend(), PrintInt());
+		std::cout << std::endl;
+	}
+
+	class AddValue {
+	private:
+		int theValue;
+	public:
+		AddValue(int v) : theValue(v) {}
+		void operator()(int& elem) {
+			elem += theValue;
+		}
+	};
+
+	void test_function_boj_2() {
+		std::vector<int> coll;
+		for (int i = 0; i < 10; ++i) {
+			coll.push_back(i);
+		}
+		PRINT_ELEMENTS(coll, "init: ");
+
+		std::for_each(coll.begin(), coll.end(), AddValue(10));
+		PRINT_ELEMENTS(coll, "after add: ");
+
+		std::for_each(coll.begin(), coll.end(), AddValue(*coll.begin()));
+		PRINT_ELEMENTS(coll, "after iter: ");
+	}
+
+	// 使用预定义函数
+	void test_function_boj_3() {
+		std::list<int> coll;
+		for (int i = 0; i < 10; ++i) {
+			coll.push_back(i);
+		}
+		PRINT_ELEMENTS(coll, "init: ");
+		std::transform(coll.cbegin(), coll.cend(), coll.begin(), std::negate<int>());
+		PRINT_ELEMENTS(coll, "negative: ");
+		std::transform(coll.cbegin(), coll.cend(), coll.cbegin(), coll.begin(), std::multiplies<int>());
+		PRINT_ELEMENTS(coll, "multiplies: ");
 	}
 };
 
@@ -344,4 +397,7 @@ int main() {
 	AllContainerAndAlgorithm::test_for_each();
 	AllContainerAndAlgorithm::test_transform();
 	AllContainerAndAlgorithm::test_lambda();
+	AllContainerAndAlgorithm::test_function_object();
+	AllContainerAndAlgorithm::test_function_boj_2();
+	AllContainerAndAlgorithm::test_function_boj_3();
 }
