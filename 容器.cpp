@@ -373,6 +373,32 @@ namespace AllContainerAndAlgorithm {
 		std::transform(coll.cbegin(), coll.cend(), coll.cbegin(), coll.begin(), std::multiplies<int>());
 		PRINT_ELEMENTS(coll, "multiplies: ");
 	}
+
+	using namespace std::placeholders;
+	void test_binder() {
+		std::set<int, std::greater<int>> coll = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		PRINT_ELEMENTS(coll, "initialized: ");
+
+		std::deque<int> coll2;
+		std::transform(coll.cbegin(), coll.cend(),
+			std::back_inserter(coll2),
+			std::bind(std::multiplies<int>(), _1, 10)
+		);
+		PRINT_ELEMENTS(coll2, "transformer: ");
+
+		std::replace_if(coll2.begin(), coll2.end(),
+			std::bind(std::equal_to<int>(), _1, 70), 42);
+
+		PRINT_ELEMENTS(coll2, "replace: ");
+
+
+		coll2.erase(std::remove_if(coll2.begin(), coll2.end(),
+			std::bind(std::logical_and<bool>(),
+				std::bind(std::greater_equal<int>(), _1, 50),
+				std::bind(std::less_equal<int>(), std::placeholders::_1, 80))),
+			coll2.end());
+		PRINT_ELEMENTS(coll2, "erase: ");
+	}
 };
 
 
@@ -400,4 +426,5 @@ int main() {
 	AllContainerAndAlgorithm::test_function_object();
 	AllContainerAndAlgorithm::test_function_boj_2();
 	AllContainerAndAlgorithm::test_function_boj_3();
+	AllContainerAndAlgorithm::test_binder();
 }
