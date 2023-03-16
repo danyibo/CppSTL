@@ -5,6 +5,7 @@
 #include <iostream>
 #include <functional>
 #include <vector>
+#include <deque>
 
 
 
@@ -62,16 +63,39 @@ void test_vector() {
 	sentence.shrink_to_fit();
 	std::cout << " size(): " << sentence.size() << std::endl;
 	std::cout << " capacity() " << sentence.capacity() << std::endl;
+}
 
+void test_deque() {
+	std::deque<std::string> coll;
+	coll.assign(3, std::string("string"));
+	coll.push_back("last string");
+	coll.push_front("first string");
 
+	std::copy(coll.cbegin(), coll.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
+	std::cout << std::endl;
+
+	coll.pop_front();
+	coll.pop_back();
+
+	for (unsigned int i = 0; i < coll.size(); ++i) {
+		coll[i] = "anoter " + coll[i];
+	}
+	coll.resize(4, "resize string");
+	std::copy(coll.cbegin(), coll.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
+	std::cout << std::endl;
 
 
 }
 
 
+void test_list() {
+
+}
+
 
 int main() {
 	// test_array();
-	test_vector();
+	// test_vector();
+	test_deque();
 	return 0;
 }
