@@ -6,12 +6,14 @@
 #include <functional>
 #include <vector>
 #include <deque>
+#include <list>
+
 
 
 
 
 template<typename T>
-inline void PRINT_ELEMENTS(const T& coll, const std::string& optstr = "") {
+inline void PRINT_ELEMENTS(const T & coll, const std::string & optstr = "") {
 	std::cout << optstr;
 	for (const auto& elem : coll) {
 		std::cout << elem << " ";
@@ -28,7 +30,7 @@ void test_array() {
 
 	std::cout << "sum: "
 		<< std::accumulate(a.begin(), a.end(), 0)
-	<< std::endl;
+		<< std::endl;
 
 	std::transform(a.begin(), a.end(), a.begin(), std::negate<int>());
 	PRINT_ELEMENTS(a);
@@ -54,7 +56,7 @@ void test_vector() {
 	std::cout << std::endl;
 	std::cout << " size(): " << sentence.size() << std::endl;
 	std::cout << " capacity() " << sentence.capacity() << std::endl;
-	
+
 	sentence.pop_back();
 	sentence.pop_back();
 	std::cout << " size(): " << sentence.size() << std::endl;
@@ -88,7 +90,38 @@ void test_deque() {
 }
 
 
+void printLists(const std::list<int>& l1, const std::list<int>& l2) {
+	std::cout << "list1: ";
+	std::copy(l1.cbegin(), l1.cend(), std::ostream_iterator<int>(std::cout, " "));
+	std::cout << std::endl;
+	std::cout << "list2: ";
+	std::copy(l2.cbegin(), l2.cend(), std::ostream_iterator<int>(std::cout, " "));
+	std::cout << std::endl;
+}
+
 void test_list() {
+	std::list<int> list1, list2;
+	for (int i = 0; i < 6; ++i) {
+		list1.push_back(i);
+		list2.push_front(i);
+	}
+	printLists(list1, list2);
+
+	std::cout << "insert all elements of list1 before the first element with value 3 of list2 " << std::endl;
+	list2.splice(std::find(list2.begin(), list2.end(), 3),
+		list1);
+	printLists(list1, list2);
+	std::cout << "move first elements of list2 to the end" << std::endl;
+	list2.splice(list2.end(), list2, list2.begin());
+	printLists(list1, list2);
+
+
+	list2.sort();
+	list1 = list2;
+	printLists(list1, list2);
+
+	list1.merge(list2);
+	printLists(list1, list2);
 
 }
 
@@ -96,6 +129,7 @@ void test_list() {
 int main() {
 	// test_array();
 	// test_vector();
-	test_deque();
+	// test_deque();
+	test_list();
 	return 0;
 }
