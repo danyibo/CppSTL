@@ -7,6 +7,7 @@
 #include <vector>
 #include <deque>
 #include <list>
+#include <forward_list>
 
 
 
@@ -125,11 +126,32 @@ void test_list() {
 
 }
 
+void test_forward_list() {
+	/*
+	  forward_list 只能向前，无法向后
+	  因此，找到满足条件的元素的时候，往往已经是找过头了，这时候是无法回头的
+	  这往往用两个迭代器来进行，一个表示满足条件的位置，一个表示之前元素的位置
+	*/
+
+	std::forward_list<int> list = { 1, 2, 3, 4, 5, 6 };
+	auto posBefore = list.before_begin();
+	for (auto pos = list.begin(); pos != list.end(); ++pos, ++posBefore) {
+		if (*pos % 2 == 0) {
+			break;
+		}
+		
+	}
+	list.insert_after(posBefore, 444444444);
+	PRINT_ELEMENTS(list);
+
+}
+
 
 int main() {
 	// test_array();
 	// test_vector();
 	// test_deque();
-	test_list();
+	// test_list();
+	test_forward_list();
 	return 0;
 }
