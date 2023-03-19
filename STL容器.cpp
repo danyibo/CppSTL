@@ -8,6 +8,8 @@
 #include <deque>
 #include <list>
 #include <forward_list>
+#include <set>
+
 
 
 
@@ -126,6 +128,23 @@ void test_list() {
 
 }
 
+template<typename InputInterator, typename Tp>
+inline InputInterator
+finde_before(InputInterator first, InputInterator last, const Tp& val) {
+	if (first == last) {
+		return first;
+	}
+	InputInterator next(first);
+	++next;
+	while (next != last && !(*next == val))
+	{
+		++next;
+		++first;
+	}
+	return first; 
+}
+
+
 void test_forward_list() {
 	/*
 	  forward_list 只能向前，无法向后
@@ -146,12 +165,94 @@ void test_forward_list() {
 
 }
 
+void print_forward_list(const std::string& s, const std::forward_list<int>& l1,
+	std::forward_list<int>& l2) {
+	std::cout << s << std::endl;
+	std::cout << "list1: ";
+	std::copy(l1.cbegin(), l1.cend(), std::ostream_iterator<int>(std::cout, " "));
+	std::cout << std::endl;
+	std::cout << "list2: ";
+	std::copy(l2.cbegin(), l2.cend(), std::ostream_iterator<int>(std::cout, " "));
+	std::cout << std::endl;
+
+}
+
+void test_forward_list2() {
+	std::forward_list<int> list1 = { 1, 2, 3, 4 };
+	std::forward_list<int> list2 = { 77, 88, 99 };
+
+	list2.insert_after(list2.before_begin(), 99);
+	list2.push_front(10);
+	list2.insert_after(list2.before_begin(), { 10, 11, 12, 13 });
+	print_forward_list("6 new elem: ", list1, list2);
+
+	list1.insert_after(list1.before_begin(), list2.begin(), list2.end());
+	print_forward_list("list2 into list1: ", list1, list2);
+
+	list2.erase_after(list2.begin());
+	list2.erase_after(std::find(list2.begin(), list2.end(), 99),
+		list2.end());
+	print_forward_list("delete 2nd and after 99: ", list1, list2);
+
+	
+	list1.sort();
+	list2 = list1;
+	list2.unique();
+	print_forward_list("sorted and unique: ", list1, list2);
+
+	list1.merge(list2);
+	print_forward_list("merged: ", list1, list2);
+
+	
+}
+
+
+void test_lower_upper_bounds_equal_range() {
+	std::set<int> c;
+	c.insert(1);
+	c.insert(2);
+	c.insert(4);
+	c.insert(5);
+	c.insert(6);
+	
+	std::cout << "low bounds(3): " << *c.lower_bound(3) << std::endl;
+	std::cout << "uper bounds(3): " << *c.upper_bound(3) << std::endl;
+	std::cout << "equal range(3): " << *c.equal_range(3).first << " "
+		<< *c.equal_range(3).second << std::endl;
+}
+
+void test_set() {
+	std::set<int, std::greater<int>> coll1;
+	coll1.insert({ 4, 3, 5, 1, 6, 2 });
+	coll1.insert(5);
+
+	for (int elem : coll1) {
+		std::cout << elem << " ";
+	}std::cout << std::endl;
+
+	auto status = coll1.insert(4);
+	if (status.second) {
+		std::cout << "4 inserted as element " <<
+			std::distance(coll1.begin(), status.first) + 1 << std::endl;
+	}
+
+	else {
+		std::cout << "4 already exists " << std::endl;
+	}
+
+	std::set<int> coll2(coll1.cbegin(), coll1.cend());
+	std::copy(coll2.cbegin(), coll2.cend(), std::ostream_iterator<int>(std::cout, " "));
+
+}
 
 int main() {
 	// test_array();
 	// test_vector();
 	// test_deque();
 	// test_list();
-	test_forward_list();
+	// test_forward_list();
+	// test_forward_list2();
+	// test_lower_upper_bounds_equal_range();
+	test_set();
 	return 0;
 }
