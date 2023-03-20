@@ -9,6 +9,8 @@
 #include <list>
 #include <forward_list>
 #include <set>
+#include <map>
+#include <iomanip>
 
 
 
@@ -245,6 +247,169 @@ void test_set() {
 
 }
 
+
+void test_map() {
+	std::map<std::string, double> coll{
+		{"tim", 9.9},
+		{"struppi", 11.7}
+	};
+
+	std::for_each(coll.begin(), coll.end(), [](std::pair<const std::string, double>& elem) {
+		elem.second *= elem.second;
+		});
+	std::for_each(coll.begin(), coll.end(), [](const std::map<std::string, double>::value_type& elem) {
+		std::cout << elem.first << ": " << elem.second << std::endl;
+		});
+}
+
+void test_map2() {
+	// 将map当作关联式数组
+	using namespace std;
+	typedef map<string, float> StringFloatMap;
+	StringFloatMap stocks;
+
+	stocks["BASF"] = 132.9;
+	stocks["VW"] = 413.50;
+	stocks["BMW"] = 1243.0;
+
+	StringFloatMap::iterator pos;
+	cout << left;
+	for (pos = stocks.begin(); pos != stocks.end(); ++pos) {
+		cout << "stock: " << setw(12) << pos->first << "price: " << pos->second << endl;
+	}
+	cout << endl;
+
+
+	for (pos = stocks.begin(); pos != stocks.end(); ++pos) {
+		pos->second *= 2;
+	}
+
+	for (pos = stocks.begin(); pos != stocks.end(); ++pos) {
+		cout << "stock: " << setw(12) << pos->first << "price: " << pos->second << endl;
+	}
+	cout << endl;
+
+
+}
+
+
+void test_map3() {
+	using namespace std;
+	map<float, float> coll = { {1, 7}, {2, 4}, {3, 2}, {4,3}, {5, 6}, {6, 1}, {7, 3} };
+	auto posKey = coll.find(3.0);
+	if (posKey != coll.end()) {
+		cout << "key 3.0 find " << posKey->first << ": " << posKey->second << endl;
+	}
+
+	auto posVal = find_if(coll.begin(), coll.end(), [](const pair<float, float>& elem) {return elem.second == 3; });
+	if (posVal != coll.end()) {
+		cout << "value 3.0 find" << posVal->first << ": " << posVal->second << endl;
+	}
+
+}
+
+// 运行期排序准则的测试
+namespace SetTestRunTime {
+	using namespace std;
+
+	class RuntimeCmp {
+	public: 
+		enum cmp_mode{normal, reverse};
+
+	private:
+		cmp_mode mode;
+	public:
+		RuntimeCmp(cmp_mode m = normal) :mode(m) {}
+		
+		template<typename T>
+		bool operator() (const T& t1, const T& t2)const {
+			return mode == normal ? t1 < t2 : t2 < t1;
+		}
+		bool operator==(const RuntimeCmp& rc) const {
+			return mode == rc.mode;
+		}
+	};
+
+	typedef set<int, RuntimeCmp> IntSet;
+	void test() {
+		IntSet coll1 = { 4, 6, 76, 2, 5, 1 };
+		RuntimeCmp reverse_order(RuntimeCmp::reverse);
+		PRINT_ELEMENTS(coll1);
+
+		IntSet coll2(reverse_order);
+		coll2 = { 4, 6, 1, 245, 56 };
+		PRINT_ELEMENTS(coll2, "coll2: ");
+
+	}
+
+};
+
+
+namespace MapRunTimeTest {
+	using namespace std;
+
+	class RunTimeStringCmp {
+	public:
+		enum cmp_mode{normal, nocase};
+	private:
+		const cmp_mode mode;
+		static bool nocase_compare(char c1, char c2) {
+			return toupper(c1) < toupper(c2);
+		}
+	public:
+		RunTimeStringCmp(cmp_mode m = normal) :mode(m) {}
+		bool operator()(const string& s1, const string& s2)const {
+			if (mode == normal) {
+				return s1 < s2;
+			}
+			else {
+				return lexicographical_compare(s1.begin(), s1.end(),
+					s2.begin(), s2.end(),
+					nocase_compare);
+			}
+		}
+
+	};
+
+
+	typedef map<string, string, RunTimeStringCmp> StringStringMap;
+
+
+	void fillAndPrint(StringStringMap& coll) {
+		coll["Deuschland"] = "Germany";
+		coll["deusch"] = "German";
+		coll["Hanken"] = "snag";
+		coll["arbeiten"] = "work";
+
+		cout.setf(ios::left, ios::adjustfield);
+		for (const auto& elem : coll) {
+			cout << setw(15) << elem.first << " " << elem.second << endl;
+		}cout << endl;
+	}
+
+
+	void main_test() {
+		StringStringMap coll1;
+		fillAndPrint(coll1);
+
+		RunTimeStringCmp ignorecase(RunTimeStringCmp::nocase);
+
+		StringStringMap coll2(ignorecase);
+		fillAndPrint(coll2);
+
+
+	}
+
+
+
+
+
+
+
+};
+
+
+
 int main() {
 	// test_array();
 	// test_vector();
@@ -253,6 +418,9 @@ int main() {
 	// test_forward_list();
 	// test_forward_list2();
 	// test_lower_upper_bounds_equal_range();
-	test_set();
+	// test_set();
+	// test_map3();
+	// SetTestRunTime::test();
+	MapRunTimeTest::main_test();
 	return 0;
 }
