@@ -11,8 +11,8 @@
 #include <set>
 #include <map>
 #include <iomanip>
-
-
+#include <unordered_set>
+#include <unordered_map>
 
 
 
@@ -404,6 +404,29 @@ namespace MapRunTimeTest {
 };
 
 
+void test_unorder_set() {
+	using namespace std;
+	unordered_set<int> coll = { 1,2,3,5,7,11,13,19,17 };
+	PRINT_ELEMENTS(coll);
+	coll.insert({ -7,17,33,-11,17, 19,1,13 });
+	PRINT_ELEMENTS(coll);
+
+	if (coll.find(19) != coll.end()) {
+		cout << "19 is available " << endl;
+	}
+	unordered_set<int>::iterator pos;
+	for (pos = coll.begin(); pos != coll.end();) {
+		if (*pos < 0) {
+			pos = coll.erase(pos);
+		}
+		else {
+			++pos;
+		}
+	}
+	PRINT_ELEMENTS(coll);
+}
+
+
 
 int main() {
 	// test_array();
@@ -416,6 +439,7 @@ int main() {
 	// test_set();
 	// test_map3();
 	// SetTestRunTime::test();
-	MapRunTimeTest::main_test();
+	// MapRunTimeTest::main_test();
+	test_unorder_set();
 	return 0;
 }
