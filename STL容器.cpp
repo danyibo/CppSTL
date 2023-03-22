@@ -427,6 +427,75 @@ void test_unorder_set() {
 }
 
 
+namespace Reference {
+	class Item {
+	private:
+		std::string name;
+		float price;
+	public:
+		Item(const std::string& n, float p = 0) :name(n), price(p) {}
+		std::string getName()const {
+			return name;
+		}
+		void setName(const std::string& n) {
+			name = n;
+		}
+		float getPrice()const {
+			return price;
+		}
+		void setPrice(float p) {
+			price = p;
+		}
+	};
+
+	template<typename Coll>
+	void printItems(const std::string& msg, const Coll& coll) {
+		std::cout << msg << std::endl;
+		for (const auto& elem : coll) {
+			std::cout << " " << elem->getName() << ": " << elem->getPrice() << std::endl;
+		}
+	}
+
+	void test() {
+		using namespace std;
+
+		typedef shared_ptr<Item> ItemPtr;
+		set<ItemPtr> allItems;
+		deque<ItemPtr> bestsellers;
+
+		bestsellers = {
+			ItemPtr(new Item("Kong Yize", 20.10)),
+			ItemPtr(new Item("A Midsummer Night's Dream", 14.9)),
+			ItemPtr(new Item("The Maltees Falcon", 9.88))
+		};
+		allItems = { ItemPtr(new Item("Water", 0.44)),
+					ItemPtr(new Item("Pizza", 2.22)) };
+
+		allItems.insert(bestsellers.begin(), bestsellers.end());
+		printItems("bestsellers: ", bestsellers);
+		printItems("all: ", allItems);
+		cout << endl;
+
+		for_each(bestsellers.begin(), bestsellers.end(), [](shared_ptr<Item>& elem) {
+			elem->setPrice(elem->getPrice() * 2);
+			});
+
+		bestsellers[1] = *(find_if(allItems.begin(), allItems.end(),
+			[](shared_ptr<Item> elem) {
+				return elem->getName() == "Pizza";
+			}
+		));
+
+		printItems("best ", bestsellers);
+		printItems("all ", allItems);
+
+	}
+
+
+
+};
+
+
 
 int main() {
 	// test_array();
@@ -440,6 +509,7 @@ int main() {
 	// test_map3();
 	// SetTestRunTime::test();
 	// MapRunTimeTest::main_test();
-	test_unorder_set();
+	// test_unorder_set();
+	Reference::test();
 	return 0;
 }
