@@ -341,9 +341,95 @@ void test09() {
 	}
 }
 
+void test10() {
+	// test transofrming and combining element
+	std::vector<int> coll1;
+	std::vector<int> coll2;
+	INSERT_ELEMENTS(coll1, 1, 9);
+	PRINT_ELEMENTS(coll1, "coll1: ");
+	std::transform(coll1.cbegin(), coll1.cend(),
+		           coll1.begin(),
+		           std::negate<int>());
+	PRINT_ELEMENTS(coll1, "neagte: ");
+
+	std::transform(coll1.begin(), coll1.end(),
+		std::back_inserter(coll2),
+		std::bind(std::multiplies<int>(), std::placeholders::_1, 10));
+
+	PRINT_ELEMENTS(coll2, "coll2: ");
+
+	std::transform(coll2.crbegin(), coll2.crend(),
+		std::ostream_iterator<int>(std::cout, " "),
+		[](int elem)
+		{
+			return -elem;
+		}
+	);
+
+	std::cout << std::endl;
+
+	coll2.clear();
+
+	std::transform(coll1.cbegin(), coll1.cend(),
+		coll1.cbegin(),
+		coll1.begin(),
+		std::multiplies<int>());
+	PRINT_ELEMENTS(coll1, "coll1: ");
+
+	std::transform(coll1.cbegin(), coll1.cend(),
+		coll1.crbegin(),
+		std::back_inserter(coll2),
+		std::plus<int>());
+	PRINT_ELEMENTS(coll2, "coll2: ");
+
+
+
+}
+
+void test11() {
+	// test swap_range()
+	std::vector<int> coll1;
+	std::deque<int> coll2;
+	INSERT_ELEMENTS(coll1, 1, 9);
+	INSERT_ELEMENTS(coll2, 11, 23);
+	PRINT_ELEMENTS(coll1, "coll1: ");
+	PRINT_ELEMENTS(coll2, "coll2: ");
+
+	std::deque<int>::iterator pos;
+	pos = std::swap_ranges(coll1.begin(), coll1.end(), coll2.begin());
+	PRINT_ELEMENTS(coll1, "coll1: ");
+	PRINT_ELEMENTS(coll2, "coll2: ");
+	
+	//std::cout << "pos = " << *pos << std::endl;
+
+	if (pos != coll2.end()) {
+		std::cout << "first element not modified: " << *pos << std::endl;
+	}
+	
+	std::swap_ranges(coll2.begin(), coll2.begin() + 3, coll2.rbegin());
+	PRINT_ELEMENTS(coll2, "coll2: ");
+
+
+
+
+}
+
+
+void test12() {
+	// fill
+	using namespace std;
+	fill_n(ostream_iterator<float>(cout, " "), 10, 7.7);
+	cout << endl;
+}
+
+
+
 
 int main() {
-	test09();
+	test12();
+	// test11();
+	// test10();
+	// test09();
 	// test08();
 	// test07();
 	// test06();
